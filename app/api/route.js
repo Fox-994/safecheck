@@ -1,30 +1,23 @@
-import { buildResult } from "../../../lib/scoring";
+import { buildResult } from "../../lib/scoring";
 
 export async function GET() {
+  const demoAnswers = {
+    passwords: 3,
+    emailAccess: 3,
+    backup: 1,
+    links: 1,
+    publicWifi: 0,
+    phoneProtection: 1,
+    updates: 1,
+    incidentReadiness: 3,
+    appAccess: 1,
+  };
+
+  const result = buildResult(demoAnswers);
+
   return Response.json({
     ok: true,
-    message: "Route /api/score attiva",
+    message: "SafeCheck API attiva",
+    result,
   });
-}
-
-export async function POST(request) {
-  try {
-    const body = await request.json();
-    const { answers = {}, breach = null } = body;
-
-    const result = buildResult(answers, breach);
-
-    return Response.json(result);
-  } catch (error) {
-    console.error("Errore API /api/score:", error);
-
-    return Response.json(
-      {
-        ok: false,
-        message: "Errore durante il calcolo del punteggio.",
-        error: String(error),
-      },
-      { status: 500 }
-    );
-  }
 }
