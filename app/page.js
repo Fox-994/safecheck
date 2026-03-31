@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 export default function Home() {
@@ -12,6 +14,9 @@ export default function Home() {
 
         <Link
           href="/check"
+          onClick={() => {
+            console.log("START_TEST");
+          }}
           className="block rounded-2xl bg-slate-900 px-6 py-4 font-semibold text-white"
         >
           Inizia il controllo

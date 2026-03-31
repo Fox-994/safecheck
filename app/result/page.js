@@ -161,11 +161,16 @@ export default function ResultPage() {
   const router = useRouter();
   const [answers, setAnswers] = useState({});
   const [isLoaded, setIsLoaded] = useState(false);
+  const [feedbackSent, setFeedbackSent] = useState(false);
 
   useEffect(() => {
     const storedAnswers = readAnswersFromStorage();
     setAnswers(storedAnswers);
     setIsLoaded(true);
+
+    if (storedAnswers && Object.keys(storedAnswers).length > 0) {
+      console.log("COMPLETED_TEST");
+    }
   }, []);
 
   const result = useMemo(() => {
@@ -177,6 +182,11 @@ export default function ResultPage() {
   const primaryGuidePath = getPrimaryGuidePath(result);
 
   const hasAnswers = Object.keys(answers || {}).length > 0;
+
+  function handleFeedback(type) {
+    console.log(type);
+    setFeedbackSent(true);
+  }
 
   if (!isLoaded) {
     return (
@@ -376,6 +386,9 @@ export default function ResultPage() {
                   {guidePath ? (
                     <Link
                       href={guidePath}
+                      onClick={() =>
+                        console.log(`CLICK_GUIDE_${action.id || index + 1}`)
+                      }
                       className="inline-flex items-center justify-center rounded-2xl border border-slate-900 bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:opacity-95"
                     >
                       Vai alla guida operativa
@@ -404,6 +417,13 @@ export default function ResultPage() {
                           href={tool.href}
                           target="_blank"
                           rel="noreferrer"
+                          onClick={() =>
+                            console.log(
+                              `CLICK_TOOL_${tool.label
+                                .replace(/\s+/g, "_")
+                                .toUpperCase()}`
+                            )
+                          }
                           className={`flex items-center justify-between rounded-2xl border px-4 py-4 text-sm font-medium transition ${
                             toolIndex === 0
                               ? "border-slate-900 bg-slate-900 text-white"
@@ -442,7 +462,10 @@ export default function ResultPage() {
 
           <div className="mt-6 grid gap-3 md:grid-cols-2">
             <button
-              onClick={() => router.push("/check")}
+              onClick={() => {
+                console.log("CLICK_RETAKE_CHECK");
+                router.push("/check");
+              }}
               className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-50"
             >
               Rifai il check
@@ -451,6 +474,7 @@ export default function ResultPage() {
             {primaryGuidePath ? (
               <Link
                 href={primaryGuidePath}
+                onClick={() => console.log("CLICK_PRIORITY_1")}
                 className="inline-flex items-center justify-center rounded-2xl border border-slate-900 bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:opacity-95"
               >
                 Apri la priorità 1
@@ -470,6 +494,36 @@ export default function ResultPage() {
             Parti dalla priorità 1: è l’azione che riduce più rischio nel minor
             tempo.
           </p>
+
+          <div className="mt-6 border-t border-slate-200 pt-6 text-center">
+            <p className="text-sm leading-6 text-slate-500">
+              Ti è stato utile questo risultato?
+            </p>
+
+            <div className="mt-4 flex justify-center gap-3">
+              <button
+                onClick={() => handleFeedback("FEEDBACK_YES")}
+                disabled={feedbackSent}
+                className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                👍 Sì
+              </button>
+
+              <button
+                onClick={() => handleFeedback("FEEDBACK_NO")}
+                disabled={feedbackSent}
+                className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                👎 No
+              </button>
+            </div>
+
+            {feedbackSent && (
+              <p className="mt-3 text-sm text-emerald-600">
+                Feedback registrato. Almeno una cosa utile l’hai fatta.
+              </p>
+            )}
+          </div>
         </section>
       </div>
     </main>
