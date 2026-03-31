@@ -1,5 +1,4 @@
 import { buildResult } from "../../lib/scoring";
-
 export async function GET() {
   const demoAnswers = {
     passwords: 3,
